@@ -1,0 +1,641 @@
+##Building with Buddycloud
+
+
+
+---
+
+
+
+## Simon Tennant
+### Buddycloud
+
+
+
+---
+
+
+
+##**Web** Realtime Communications
+
+
+
+---
+
+
+
+##Voice and Video
+### **amazing** video quality
+### modern codecs
+
+
+
+---
+
+
+
+##Data Channels
+### **arbitrary data**
+### reliable or unreliable transfer
+
+
+
+---
+
+
+
+##Peer to Peer
+### but you need a **signalling server**
+### and a little help sometimes
+
+
+
+---
+
+
+
+##Voice over IP?
+
+
+
+---
+
+
+
+##so what is **exciting** about this?
+
+
+
+---
+
+
+
+### a project to bring realtime communication, RTC, to the
+##**open web platform**
+### [Justin Uberti at Google IO 2012](https://www.youtube.com/watch?v=E8C8ouiXHHk)
+
+
+
+---
+
+
+
+##Ford Model T
+#### (Emil Ivov)
+### first **affordable** automobile 
+### opened travel to middle class
+### no longer a **status symbol**
+
+
+
+---
+
+
+
+##Videochat and P2P become **features** of web applications
+
+
+
+---
+
+
+
+##commmoditize
+
+
+
+---
+
+
+
+##focus on UI/UX
+
+
+
+---
+
+
+
+## The **API**
+
+
+
+---
+
+
+
+##GetUserMedia
+```javascript
+getUserMedia({audio: true, video:true}, 
+    function (stream) {
+        // ...
+    }, function (err) {
+        // ...
+    }
+);
+```
+[adapter.js](https://github.com/GoogleChrome/webrtc/blob/master/samples/web/js/adapter.js)
+
+
+
+---
+
+
+
+##yetified
+```javascript
+var getUserMedia = require('getusermedia');
+getUserMedia(function (err, stream) {
+    if (err) {
+       console.log('failed');
+    } else {
+       console.log('got a stream', stream);  
+    }
+});
+```
+https://github.com/henrikjoreteg/getusermedia
+https://github.com/henrikjoreteg/attachmediastream
+
+
+
+---
+
+
+
+## Lets **try** this...
+
+
+
+---
+
+
+
+##RTCPeerConnection
+```javascript
+var pc = new RTCPeerConnection({iceServers: []});
+pc.createOffer(
+    function (offer) {
+        pc.setLocalDescription(offer, 
+            function () {
+                // send to peer
+            }, 
+            console.error
+        });
+    }, 
+    console.error
+});
+```
+
+
+
+---
+
+
+
+##yetified
+```javascript
+var PeerConnection = require('rtcpeerconnection');
+var pc = new PeerConnection({iceServers: []});
+pc.offer(function (offer) {
+    // send to peer
+});
+```
+https://github.com/henrikjoreteg/rtcpeerconnection
+
+
+
+---
+
+
+
+## simplewebrtc
+```javascript
+var webrtc = new SimpleWebRTC({
+    localVideoEl: 'localVideo',
+    remoteVideosEl: 'remotesVideos',
+    autoRequestMedia: true
+});
+webrtc.on('readyToCall', function () {
+    webrtc.joinRoom('berlinjs');
+});
+```
+http://simplewebrtc.com
+
+
+
+---
+
+
+
+## simplewebrtc
+#### http://simplewebrtc.com/demo.html?berlinjs
+
+
+
+---
+
+
+
+## you can build things in **5 minutes**
+
+
+
+---
+
+
+
+## but**...**
+![img](images/berlinjs/jan.png)
+
+
+
+---
+
+
+
+## Hello **ICE**
+![img](images/berlinjs/longyearbyen.jpg)
+### Internet connectivity establishment
+
+
+
+---
+
+
+
+## Peer to Peer**?**
+![img](images/berlinjs/ice1.png)
+
+#### Thanks [David Welzmilller](https://twitter.com/dwelzmiller)
+
+
+
+---
+
+
+
+## STUN
+![img](images/berlinjs/ice2.png)
+### what is my public ip?
+### **90%**
+
+
+
+---
+
+
+
+## TURN
+![img](images/berlinjs/ice3.png)
+### relay server
+### **8%**
+
+
+
+---
+
+
+
+## TURN
+![img](images/berlinjs/ice4.png)
+### > **50%** on mobile networks
+
+
+
+---
+
+
+
+## TURN
+![img](images/berlinjs/ice5.png)
+### ICE figures out the details
+
+
+
+---
+
+
+
+## Firewalls
+### HTTP / HTTPS proxies
+### often found in the enterprise
+### **2%**
+
+
+
+---
+
+
+
+## STUN/TURN API
+```javascript
+var PeerConnection = require('rtcpeerconnection');
+var pc = new PeerConnection({iceServers: [
+    {url: 'stun:stun.l.google.com:19302'},
+    {
+        url: 'turn:your.turn.server', 
+        username: 'someuser', 
+        credential: 'secret'
+    }
+]});
+```
+###Exposes **secret**
+
+
+
+---
+
+
+
+## STUN/TURN API
+```javascript
+var PeerConnection = require('rtcpeerconnection');
+var pc = new PeerConnection({iceServers: [
+    {url: 'stun:stun.l.google.com:19302'},
+    {
+        url: 'turn:your.turn.server', 
+        username: timestampinthefuture
+        credential: hmacsignedtimestamp
+    }
+]});
+```
+### see [this spec](http://tools.ietf.org/html/draft-uberti-behave-turn-rest-00) for details
+#### [signalmaster](https://github.com/andyet/signalmaster) and [restund](https://github.com/andyet/otalk-server/tree/master/restund) implement this
+
+
+
+---
+
+
+
+## **happy** users
+![img](images/berlinjs/happyusers.png)
+
+
+
+---
+
+
+
+## Peer to Peer**?**
+### for multi-user **conferencing**
+### everyone sends to everyone else
+### **full mesh**
+
+
+
+---
+
+
+
+## Full Mesh
+![img](images/berlinjs/full-mesh1.png)
+
+
+
+
+---
+
+
+
+## Full Mesh
+![img](images/berlinjs/full-mesh2.png)
+
+
+
+---
+
+
+
+## Full Mesh
+![img](images/berlinjs/full-mesh3.png)
+
+
+
+---
+
+
+
+## Full Mesh
+![img](images/berlinjs/full-mesh4.png)
+
+
+
+---
+
+
+
+## Full Mesh
+![img](images/berlinjs/full-mesh5.png)
+
+
+
+---
+
+
+
+## Full Mesh
+![img](images/berlinjs/full-mess-partial.png)
+
+
+
+
+---
+
+
+
+## Full **Mess**
+### Emil Ivov
+#### who also made these wonderful pictures
+
+
+
+---
+
+
+
+## Mop up...
+
+
+
+---
+
+
+
+## Multipoint Control Unit
+### a **central** server
+
+
+
+---
+
+
+
+## **mixes** audio and video
+### controls video layout
+### requires transcoding
+### expensive
+
+
+
+---
+
+
+
+### introduces **delay**
+### Alex Eleftheriadis from Vidyo wants the
+## **death** of the **MCU**
+[VUC #484](http://www.voipusersconference.org/2014/vuc484-the-future-of-video/)
+
+
+
+---
+
+
+
+### a **new kind** of server
+## Selective Forwarding Unit
+### **multiple** video streams
+### composition in **endpoint**
+
+
+
+---
+
+
+
+## **forwards** streams
+![img](images/berlinjs/jitsi-sfu-2.png)
+
+
+
+---
+
+
+
+## [**meet**.jit.si](https://meet.jit.si/)
+### 20 users in a conference
+### 400 streams forwarded
+### 20 360p VP8 streams decoded by chrome
+
+
+
+---
+
+
+
+## **sample** application
+### [available on github](https://github.com/jitsi/jitsi-meet)
+### prezi integration
+### hackpad integration
+### desktop sharing
+
+
+
+---
+
+
+
+## Built on **XMPP**
+### **MUC**: Multiuser chat
+### **Jingle**: Signalling
+### **CoLiBri**: controlling the bridge
+
+
+
+---
+
+
+
+## Jitsi Videobridge
+### [open source](https://jitsi.org/Projects/JitsiVideobridge) **SFU**
+### designed as **stupid** architecture element
+### controlled by focus **client**
+
+
+
+---
+
+
+
+## is WebRTC **ready**?
+![img](images/berlinjs/iswebrtcready.png)
+http://iswebrtcreadyyet.com
+
+
+
+---
+
+
+
+## Standards 
+### the standard is **not done yet**
+### webrtc 2.0 on the horizon
+### video codec debate
+### **who cares?**
+
+
+
+---
+
+
+
+## webrtc needs to move **forward**
+
+
+
+---
+
+
+
+## meet me pages**?**
+### happy faces
+### another https://apprtc.appspot.com clone
+
+
+
+---
+
+
+
+## #yaca**?**
+### yet another conferencing application
+### full mesh
+
+
+
+---
+
+
+
+## chrome-only**?**
+### we have **interop** between browsers for **more than a year** now...
+
+
+
+---
+
+
+
+## Please go and **build** something **amazing**
+
+
+
+---
+
+
+
+## **web** developers and designers!
+### **beautiful** user experiences!
+### **feature** inside applications!
+
+
+
+
+---
+
+
+
+## **use** WebRTC to solve a **problem**!
+### it is a technology, not a solution
+
+
